@@ -1,24 +1,60 @@
-import logo from './logo.svg';
 import './App.css';
+import { CoinsTable } from './components/CoinsTable';
+import { CoinInfo } from './components/CoinInfo';
+import { NavBar } from './components/NavBar';
+import { Routes, Route } from 'react-router-dom';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import { CoinContext } from './context/CoinContext';
+import { useState, useEffect } from 'react';
+import { useCoins } from './components/useCoins';
 
 function App() {
+  const [context, setContext] = useState({
+    coin: null,
+  });
+
+  const contextValue = {
+    coin: context.coin,
+    setCoin: (coin) => setContext({ coin }),
+  };
+
+  const { coins, loading, fetchCoinGecko } = useCoins();
+
+  useEffect(() => {
+    fetchCoinGecko();
+  }, [fetchCoinGecko]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box
+      className="App"
+      style={{
+        height: '100%',
+      }}
+    >
+      <NavBar />
+      <Container style={{ padding: 40 }}>
+        {loading ? (
+          <Box>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <CoinContext.Provider value={contextValue}>
+            <Routes>
+              <Route
+                path="/"
+                element={<CoinsTable coins={coins} />}
+              />
+              <Route
+                path="/coin"
+                element={<CoinInfo coins={coins} />}
+              />
+            </Routes>
+          </CoinContext.Provider>
+        )}
+      </Container>
+    </Box>
   );
 }
 
