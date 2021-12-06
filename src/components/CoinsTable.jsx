@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CoinContext } from '../context/CoinContext';
 
@@ -13,14 +13,43 @@ import TableBody from '@mui/material/TableBody';
 import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
+import CircularProgress from '@mui/material/CircularProgress';
 
-export const CoinsTable = (props) => {
+import { useCoins } from '../hooks/useCoins';
+
+export const CoinsTable = () => {
   const context = useContext(CoinContext);
 
-  console.log(props.coins, context.coin);
+  // pageId ma byc czytane z url (useLocation)
+  const pageId = 0;
+  const { page, setPage } = useState(pageId);
+  const { coins, loading, fetchCoinGecko } = useCoins();
+
+  useEffect(() => {
+    fetchCoinGecko(null, pageId);
+  }, [fetchCoinGecko, pageId]);
+
+  const onPageChange = (event, newPage) => {
+    console.log(newPage);
+    //setPage(page);
+  };
+
+  if (loading) {
+    return (
+      <Box>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  console.log(coins, context.coin);
   return (
     <Box>
-      <Typography variant="h4" align="left">
+      <Typography
+        variant="h4"
+        align="left"
+        style={{ margin: '20px 0 40px 0' }}
+      >
         Cryptocurrency Prices by Market Cap
       </Typography>
 
@@ -30,21 +59,17 @@ export const CoinsTable = (props) => {
           aria-label="simple pagination table"
         >
           <TableHead>
-            <TableRow
-              style={{
-                fontWeight: 'bold',
-              }}
-            >
+            <TableRow>
               <TableCell>#</TableCell>
               <TableCell align="left">Coin</TableCell>
               <TableCell align="left"></TableCell>
               <TableCell align="right">Price</TableCell>
-              <TableCell align="right">24H %</TableCell>
+              <TableCell align="right">24H</TableCell>
               <TableCell align="right">Mkt Cap</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.coins.map((el) => (
+            {coins.map((el) => (
               <TableRow
                 key={el.id}
                 sx={{
@@ -63,16 +88,13 @@ export const CoinsTable = (props) => {
                   }}
                 >
                   <Link
-                    to="coin"
+                    to={`coin/${el.id}`}
                     style={{
                       textDecoration: 'none',
                       color: '#000000',
                       display: 'flex',
                       alignItems: 'center',
                     }}
-                    onClick={() =>
-                      context.setCoin(el['market_cap_rank'])
-                    }
                   >
                     <img
                       src={el.image}
@@ -93,10 +115,10 @@ export const CoinsTable = (props) => {
                   $ {el['current_price']}
                 </TableCell>
                 <TableCell align="right">
-                  {el['price_change_percentage_24h']}
+                  {el['price_change_percentage_24h'].toFixed(1)}%
                 </TableCell>
                 <TableCell align="right">
-                  {el['market_cap']}
+                  $ {el['market_cap']}
                 </TableCell>
               </TableRow>
             ))}
@@ -107,12 +129,14 @@ export const CoinsTable = (props) => {
                 5,
                 10,
                 25,
+                50,
                 { label: 'All', value: -1 },
               ]}
               colSpan={4}
-              count={props.coins.length}
+              count={10000}
               rowsPerPage={50}
-              page={0}
+              page={page}
+              onPageChange={onPageChange}
             />
           </TableFooter>
         </Table>

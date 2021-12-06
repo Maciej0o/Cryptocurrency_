@@ -5,10 +5,8 @@ import { NavBar } from './components/NavBar';
 import { Routes, Route } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import { CoinContext } from './context/CoinContext';
-import { useState, useEffect } from 'react';
-import { useCoins } from './components/useCoins';
+import { useState } from 'react';
 
 function App() {
   const [context, setContext] = useState({
@@ -20,12 +18,6 @@ function App() {
     setCoin: (coin) => setContext({ coin }),
   };
 
-  const { coins, loading, fetchCoinGecko } = useCoins();
-
-  useEffect(() => {
-    fetchCoinGecko();
-  }, [fetchCoinGecko]);
-
   return (
     <Box
       className="App"
@@ -35,24 +27,12 @@ function App() {
     >
       <NavBar />
       <Container style={{ padding: 40 }}>
-        {loading ? (
-          <Box>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <CoinContext.Provider value={contextValue}>
-            <Routes>
-              <Route
-                path="/"
-                element={<CoinsTable coins={coins} />}
-              />
-              <Route
-                path="/coin"
-                element={<CoinInfo coins={coins} />}
-              />
-            </Routes>
-          </CoinContext.Provider>
-        )}
+        <CoinContext.Provider value={contextValue}>
+          <Routes>
+            <Route path="/" element={<CoinsTable />} />
+            <Route path="/coin/:id" element={<CoinInfo />} />
+          </Routes>
+        </CoinContext.Provider>
       </Container>
     </Box>
   );

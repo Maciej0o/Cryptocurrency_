@@ -1,0 +1,8 @@
+1. Breadcrumb - mui
+2. Paginacja
+- przejście na kolejną strone dodaje do adresu URL parametr ?page=2
+- przy otwieraniu strony musimy sprawdzic czy parametr page istnieje
+- 
+3. Zrobienie paska z informacjami o krypto (mcap itp.
+
+4. https://recharts.org/en-US/
