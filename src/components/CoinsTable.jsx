@@ -14,6 +14,7 @@ import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
 import CircularProgress from '@mui/material/CircularProgress';
+import { styled } from '@mui/styles';
 
 import { useCoins } from '../hooks/useCoins';
 
@@ -21,18 +22,29 @@ export const CoinsTable = () => {
   const context = useContext(CoinContext);
 
   // pageId ma byc czytane z url (useLocation)
-  const pageId = 0;
-  const { page, setPage } = useState(pageId);
+  // const pageId = 2;
+  const [page, setPage] = useState(0);
   const { coins, loading, fetchCoinGecko } = useCoins();
+  const [rowsPerPage, setRowsPerPage] = useState(50);
 
   useEffect(() => {
-    fetchCoinGecko(null, pageId);
-  }, [fetchCoinGecko, pageId]);
+    fetchCoinGecko(null, page, rowsPerPage);
+  }, [fetchCoinGecko, page, rowsPerPage]);
 
   const onPageChange = (event, newPage) => {
-    console.log(newPage);
-    //setPage(page);
+    setPage(newPage);
   };
+
+  const handleChangeRowsPerPage = (event) => {
+    console.log(rowsPerPage);
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const Title = styled(TableCell)({
+    fontSize: 15,
+    fontWeight: 'bold',
+  });
 
   if (loading) {
     return (
@@ -42,7 +54,6 @@ export const CoinsTable = () => {
     );
   }
 
-  console.log(coins, context.coin);
   return (
     <Box>
       <Typography
@@ -60,12 +71,12 @@ export const CoinsTable = () => {
         >
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell align="left">Coin</TableCell>
-              <TableCell align="left"></TableCell>
-              <TableCell align="right">Price</TableCell>
-              <TableCell align="right">24H</TableCell>
-              <TableCell align="right">Mkt Cap</TableCell>
+              <Title>#</Title>
+              <Title align="left">Coin</Title>
+              <Title align="left"></Title>
+              <Title align="right">Price</Title>
+              <Title align="right">24H</Title>
+              <Title align="right">Mkt Cap</Title>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -88,7 +99,7 @@ export const CoinsTable = () => {
                   }}
                 >
                   <Link
-                    to={`coin/${el.id}`}
+                    to={`coin/?id=${el.id}`}
                     style={{
                       textDecoration: 'none',
                       color: '#000000',
@@ -134,9 +145,10 @@ export const CoinsTable = () => {
               ]}
               colSpan={4}
               count={10000}
-              rowsPerPage={50}
+              rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={onPageChange}
+              onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </TableFooter>
         </Table>
