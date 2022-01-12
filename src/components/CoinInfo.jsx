@@ -25,7 +25,7 @@ export const CoinInfo = () => {
   const crypto = coins[0];
 
   useEffect(() => {
-    fetchCoinGecko(coin);
+    fetchCoinGecko({ id: coin });
   }, [fetchCoinGecko, coin]);
 
   if (loading) {

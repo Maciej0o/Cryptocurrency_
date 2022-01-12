@@ -1,34 +1,31 @@
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
-import { useCoins } from '../hooks/useCoins';
+import { useGlobalInfo } from '../hooks/useGlobalInfo';
 import { useEffect } from 'react';
 import { styled } from '@mui/styles';
 
+const Title = styled(Typography)({
+  fontSize: 14,
+  fontWeight: 'bold',
+  paddingRight: 5,
+});
+
+const Text = styled(Typography)({
+  fontSize: 14,
+  paddingRight: 25,
+  color: '#00b4d8',
+});
+
 export const InfoBar = () => {
-  const { global, loading, fetchCoinGecko } = useCoins();
+  const { global, loading, fetchGlobalInfo } = useGlobalInfo();
   useEffect(() => {
-    fetchCoinGecko();
-  }, [fetchCoinGecko]);
-
-  const Title = styled(Typography)({
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingRight: 5,
-  });
-
-  const Text = styled(Typography)({
-    fontSize: 14,
-    paddingRight: 25,
-    color: '#00b4d8',
-  });
+    fetchGlobalInfo({});
+  }, [fetchGlobalInfo]);
 
   if (loading) {
-    return <Paper></Paper>;
+    return <Paper> wronk</Paper>;
   }
-
   return (
     <Paper>
       <Container

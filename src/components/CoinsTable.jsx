@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CoinContext } from '../context/CoinContext';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -14,13 +13,12 @@ import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
 import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
 import { styled } from '@mui/styles';
 
 import { useCoins } from '../hooks/useCoins';
 
 export const CoinsTable = () => {
-  const context = useContext(CoinContext);
-
   // pageId ma byc czytane z url (useLocation)
   // const pageId = 2;
   const [page, setPage] = useState(0);
@@ -28,7 +26,7 @@ export const CoinsTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
 
   useEffect(() => {
-    fetchCoinGecko(null, page, rowsPerPage);
+    fetchCoinGecko({ page, rowsPerPage });
   }, [fetchCoinGecko, page, rowsPerPage]);
 
   const onPageChange = (event, newPage) => {
@@ -36,7 +34,6 @@ export const CoinsTable = () => {
   };
 
   const handleChangeRowsPerPage = (event) => {
-    console.log(rowsPerPage);
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -77,6 +74,7 @@ export const CoinsTable = () => {
               <Title align="right">Price</Title>
               <Title align="right">24H</Title>
               <Title align="right">Mkt Cap</Title>
+              <Title align="right"></Title>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -130,6 +128,19 @@ export const CoinsTable = () => {
                 </TableCell>
                 <TableCell align="right">
                   $ {el['market_cap']}
+                </TableCell>
+                <TableCell align="right">
+                  <Link
+                    to={`transactions/?id=${el.id}`}
+                    style={{
+                      textDecoration: 'none',
+                      color: '#000000',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Button variant="contained">Add</Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

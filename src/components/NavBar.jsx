@@ -34,6 +34,40 @@ export const NavBar = () => {
               Coins
             </Button>
           </Link>
+          <Link
+            to="/transactions"
+            style={{
+              textDecoration: 'none',
+              color: '#fff',
+              fontWeight: 'bold',
+            }}
+          >
+            <Button
+              color="inherit"
+              style={{
+                fontSize: 18,
+              }}
+            >
+              Transactions
+            </Button>
+          </Link>
+          <Link
+            to="/portfolio"
+            style={{
+              textDecoration: 'none',
+              color: '#fff',
+              fontWeight: 'bold',
+            }}
+          >
+            <Button
+              color="inherit"
+              style={{
+                fontSize: 18,
+              }}
+            >
+              Portfolio
+            </Button>
+          </Link>
         </Toolbar>
       </Container>
     </AppBar>
