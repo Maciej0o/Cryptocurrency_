@@ -6,9 +6,14 @@ export const useCoins = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchCoinGecko = useCallback(
-    async ({ id = null, page = 0, rowsPerPage = 50 }) => {
+    async ({
+      id = null,
+      page = 0,
+      rowsPerPage = 50,
+      currency = 'usd',
+    }) => {
       setLoading(true);
-      let URL = `coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${rowsPerPage}&page=${
+      let URL = `coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${rowsPerPage}&page=${
         page + 1
       }&sparkline=false`;
       if (id) {

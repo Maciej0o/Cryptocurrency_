@@ -1,34 +1,48 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import TableContainer from '@mui/material/TableContainer';
-import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
-import TableHead from '@mui/material/TableHead';
-import TableCell from '@mui/material/TableCell';
-import TableBody from '@mui/material/TableBody';
-import Paper from '@mui/material/Paper';
-import TablePagination from '@mui/material/TablePagination';
-import TableFooter from '@mui/material/TableFooter';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/styles';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+
+import { TransactionsContext } from '../context/TransactionsContext';
+import { saveToLsFav } from '../utils/localstorage';
 
 import { useCoins } from '../hooks/useCoins';
+import { CoinsUiTable } from './CoinsUiTable';
 
 export const CoinsTable = () => {
-  // pageId ma byc czytane z url (useLocation)
-  // const pageId = 2;
+  const context = useContext(TransactionsContext);
   const [page, setPage] = useState(0);
   const { coins, loading, fetchCoinGecko } = useCoins();
   const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [favoritesCoins, setFavoritesCoins] = useState(
+    context.favoritesCoins,
+  );
+  const [favActive, setFavActive] = useState(false);
+  const [countRows, setCounRows] = useState(12459);
+  const [currency, setCurrency] = useState(['USD', '$']);
 
   useEffect(() => {
-    fetchCoinGecko({ page, rowsPerPage });
-  }, [fetchCoinGecko, page, rowsPerPage]);
-
+    fetchCoinGecko({
+      id: favActive === true ? favoritesCoins : null,
+      page: page,
+      rowsPerPage: rowsPerPage,
+      currency: currency[0],
+    });
+  }, [
+    fetchCoinGecko,
+    favoritesCoins,
+    page,
+    rowsPerPage,
+    favActive,
+    currency,
+  ]);
   const onPageChange = (event, newPage) => {
     setPage(newPage);
   };
@@ -38,10 +52,60 @@ export const CoinsTable = () => {
     setPage(0);
   };
 
-  const Title = styled(TableCell)({
-    fontSize: 15,
-    fontWeight: 'bold',
-  });
+  const addToFavorite = (name) => {
+    const merged = [...context.favoritesCoins, name];
+    context.setFavoritesCoins(merged);
+    saveToLsFav(merged);
+  };
+
+  const removeFromFavorite = (name) => {
+    const filteredCoins = context.favoritesCoins.filter(
+      (coin) => coin !== name,
+    );
+    saveToLsFav(filteredCoins);
+    context.setFavoritesCoins(filteredCoins);
+    console.log(favActive);
+    if (favActive === true) {
+      setRowsPerPage(filteredCoins.length);
+      setCounRows(filteredCoins.length);
+      setFavoritesCoins(filteredCoins);
+    }
+  };
+
+  const showFavoritesCoins = () => {
+    setFavActive(true);
+    setCounRows(context.favoritesCoins.length);
+    setRowsPerPage(context.favoritesCoins.length);
+    setFavoritesCoins(context.favoritesCoins);
+  };
+
+  const showAllCoins = () => {
+    setFavActive(false);
+    setCounRows(12459);
+    setRowsPerPage(50);
+  };
+
+  const handleChangeCurrency = (event) => {
+    const currencyList = [
+      ['USD', '$'],
+      ['EUR', '€'],
+      ['CNY', 'CN¥'],
+      ['JPY', '¥'],
+      ['BTC', '₿'],
+      ['ETH', 'Ξ'],
+      ['PLN', 'PLN'],
+    ];
+
+    const findSign = () => {
+      for (let item of currencyList) {
+        if (item[0] === event.target.value) {
+          return item[1];
+        }
+      }
+    };
+    let currencySign = findSign();
+    setCurrency([event.target.value, currencySign]);
+  };
 
   if (loading) {
     return (
@@ -60,110 +124,54 @@ export const CoinsTable = () => {
       >
         Cryptocurrency Prices by Market Cap
       </Typography>
-
-      <TableContainer component={Paper}>
-        <Table
-          sx={{ minWidth: 650 }}
-          aria-label="simple pagination table"
+      <Box
+        style={{ display: 'flex', justifyContent: 'space-between' }}
+      >
+        <ButtonGroup
+          variant="outlined"
+          aria-label="outlined primary button group"
+          style={{ alignText: 'left', width: '80%' }}
         >
-          <TableHead>
-            <TableRow>
-              <Title>#</Title>
-              <Title align="left">Coin</Title>
-              <Title align="left"></Title>
-              <Title align="right">Price</Title>
-              <Title align="right">24H</Title>
-              <Title align="right">Mkt Cap</Title>
-              <Title align="right"></Title>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {coins.map((el) => (
-              <TableRow
-                key={el.id}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  {el['market_cap_rank']}
-                </TableCell>
+          <Button onClick={() => showAllCoins()}>All</Button>
+          <Button onClick={() => showFavoritesCoins()}>
+            Favorites
+          </Button>
+        </ButtonGroup>
+        <FormControl sx={{ width: '100px', textAlign: 'right' }}>
+          <InputLabel id="demo-simple-select-label">
+            {currency[0]}
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={currency[0]}
+            label={currency[0]}
+            onChange={handleChangeCurrency}
+          >
+            <MenuItem value={'USD'}>USD</MenuItem>
+            <MenuItem value={'EUR'}>EUR</MenuItem>
+            <MenuItem value={'JPY'}>JPY</MenuItem>
+            <MenuItem value={'CNY'}>CNY</MenuItem>
+            <MenuItem value={'PLN'}>PLN</MenuItem>
+            <MenuItem value={'BTC'}>BTC</MenuItem>
+            <MenuItem value={'ETH'}>ETH</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
-                <TableCell
-                  align="left"
-                  style={{
-                    textTransform: 'uppercase',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  <Link
-                    to={`coin/?id=${el.id}`}
-                    style={{
-                      textDecoration: 'none',
-                      color: '#000000',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <img
-                      src={el.image}
-                      alt=""
-                      style={{ width: 20, paddingRight: 10 }}
-                    />
-                    {el.name}
-                  </Link>
-                </TableCell>
-
-                <TableCell
-                  align="left"
-                  style={{ textTransform: 'uppercase' }}
-                >
-                  {el.symbol}
-                </TableCell>
-                <TableCell align="right">
-                  $ {el['current_price']}
-                </TableCell>
-                <TableCell align="right">
-                  {el['price_change_percentage_24h'].toFixed(1)}%
-                </TableCell>
-                <TableCell align="right">
-                  $ {el['market_cap']}
-                </TableCell>
-                <TableCell align="right">
-                  <Link
-                    to={`transactions/?id=${el.id}`}
-                    style={{
-                      textDecoration: 'none',
-                      color: '#000000',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Button variant="contained">Add</Button>
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TablePagination
-              rowsPerPageOptions={[
-                5,
-                10,
-                25,
-                50,
-                { label: 'All', value: -1 },
-              ]}
-              colSpan={4}
-              count={10000}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onPageChange}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableFooter>
-        </Table>
-      </TableContainer>
+      <CoinsUiTable
+        coins={coins}
+        favoritesCoins={context.favoritesCoins}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={onPageChange}
+        handleChangeRowsPerPage={handleChangeRowsPerPage}
+        removeFromFavorite={removeFromFavorite}
+        addToFavorite={addToFavorite}
+        favActive={favActive}
+        countRows={countRows}
+        currencySign={currency[1]}
+      />
     </Box>
   );
 };

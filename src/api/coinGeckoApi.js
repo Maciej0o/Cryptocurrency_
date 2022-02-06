@@ -8,7 +8,6 @@ const cache = setupCache({
 export const coinGeckoApi = axios.create({
   baseURL: 'https://api.coingecko.com/api/v3/',
   timeout: 2000,
-  adapter: cache.adapter,
   //   headers: { 'X-Custom-Header': 'foobar', accept: 'application/json' },
 });
 

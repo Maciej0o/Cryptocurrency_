@@ -18,6 +18,7 @@ import { useSearchParams } from 'react-router-dom';
 import { TransactionsContext } from '../context/TransactionsContext';
 import { saveToLs } from '../utils/localstorage';
 import { v4 as uuidv4 } from 'uuid';
+import { format } from 'date-fns';
 
 export const Transactions = () => {
   const [params] = useSearchParams();
@@ -52,19 +53,6 @@ export const Transactions = () => {
     return <span>Error while loading crypto</span>;
   }
 
-  const getActualTime = () => {
-    let date = new Date();
-    let actualDate = `${date.getDate().toString()}-${
-      date.getMonth() + (1).toString()
-    }-${date.getFullYear().toString()}   ${date
-      .getHours()
-      .toString()}:${date.getMinutes().toString()}:${date
-      .getSeconds()
-      .toString()}`;
-
-    return actualDate;
-  };
-
   const handleChangeCoinsList = () => {
     const newTransactions = context.transactions.concat({
       id: uuidv4(),
@@ -72,7 +60,7 @@ export const Transactions = () => {
       name: valueName,
       amount: parseFloat(valueAmount),
       price: parseFloat(valuePrice),
-      date: getActualTime(),
+      date: format(new Date(), 'dd-MM-yyyy  HH:mm:ss '),
     });
     saveToLs(newTransactions);
     context.setTransactions(newTransactions);

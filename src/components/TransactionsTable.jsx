@@ -15,6 +15,10 @@ import { TransactionsContext } from '../context/TransactionsContext';
 import { styled } from '@mui/styles';
 import { saveToLs } from '../utils/localstorage';
 
+export const removeTransaction = (id, transactions) => {
+  return transactions.filter((transaction) => transaction.id !== id);
+};
+
 export const TransactionsTable = (props) => {
   const context = useContext(TransactionsContext);
 
@@ -27,16 +31,7 @@ export const TransactionsTable = (props) => {
     return <span>Error while loading crypto</span>;
   }
 
-  const removeTransaction = (id) => {
-    let newArr = [];
-    for (let transaction of context.transactions) {
-      if (transaction.id !== id) {
-        newArr.push(transaction);
-      }
-    }
-    saveToLs(newArr);
-    context.setTransactions(newArr);
-  };
+  // TODO kiedys przerobic i przetestowac
 
   return (
     <Box style={{ margin: '40px 0 50px' }}>
@@ -114,7 +109,14 @@ export const TransactionsTable = (props) => {
                     variant="contained"
                     color="error"
                     size="small"
-                    onClick={() => removeTransaction(el.id)}
+                    onClick={() => {
+                      const newTransactions = removeTransaction(
+                        el.id,
+                        context.transactions,
+                      );
+                      saveToLs(newTransactions);
+                      context.setTransactions(newTransactions);
+                    }}
                   >
                     x
                   </Button>

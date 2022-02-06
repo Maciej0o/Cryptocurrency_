@@ -12,6 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Box from '@mui/material/Box';
 
+import { CoinChart } from './CoinChart';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { Link } from 'react-router-dom';
@@ -132,6 +133,7 @@ export const CoinInfo = () => {
           </Grid>
         </CardContent>
       </Card>
+      <CoinChart coin={coin} />
     </div>
   );
 };

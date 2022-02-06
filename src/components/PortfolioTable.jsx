@@ -7,9 +7,9 @@ import TableBody from '@mui/material/TableBody';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/styles';
+
 // import { useContext } from 'react';
 // import { TransactionsContext } from '../context/TransactionsContext';
-import { PortfolioValueCell } from './PortfolioValueCell';
 
 const Title = styled(TableCell)({
   fontSize: 15,
@@ -48,8 +48,64 @@ export const PortfolioTable = (props) => {
           >
             {value}
           </TableCell>
-          <PortfolioValueCell name={key} />
-          <PortfolioValueCell name={key} amount={value} />
+          <TableCell
+            align="right"
+            style={{ textTransform: 'uppercase' }}
+          >
+            ${props.prices[key]}
+          </TableCell>
+          <TableCell
+            align="right"
+            style={{ textTransform: 'uppercase' }}
+          >
+            ${props.trasnactionsValueOfPurchase[key]}
+          </TableCell>
+          <TableCell
+            align="right"
+            style={{ textTransform: 'uppercase' }}
+          >
+            ${(props.prices[key] * value).toFixed(2)}
+          </TableCell>
+
+          {((props.prices[key] * value -
+            props.trasnactionsValueOfPurchase[key]) /
+            props.trasnactionsValueOfPurchase[key]) *
+            100 >=
+          0 ? (
+            <TableCell
+              align="right"
+              style={{
+                textTransform: 'uppercase',
+                color: '#07BF29',
+                fontWeight: 'bold',
+              }}
+            >
+              {(
+                ((props.prices[key] * value -
+                  props.trasnactionsValueOfPurchase[key]) /
+                  props.trasnactionsValueOfPurchase[key]) *
+                100
+              ).toFixed(2)}
+              %
+            </TableCell>
+          ) : (
+            <TableCell
+              align="right"
+              style={{
+                textTransform: 'uppercase',
+                color: '#D71212',
+                fontWeight: 'bold',
+              }}
+            >
+              {(
+                ((props.prices[key] * value -
+                  props.trasnactionsValueOfPurchase[key]) /
+                  props.trasnactionsValueOfPurchase[key]) *
+                100
+              ).toFixed(2)}
+              %
+            </TableCell>
+          )}
         </TableRow>,
       );
     }
@@ -71,7 +127,9 @@ export const PortfolioTable = (props) => {
               <Title align="left">Coin</Title>
               <Title align="right">Amount</Title>
               <Title align="right">Price</Title>
-              <Title align="right">Value</Title>
+              <Title align="right">Purchase Value</Title>
+              <Title align="right">Actual Value</Title>
+              <Title align="right">Change %</Title>
             </TableRow>
           </TableHead>
           <TableBody>{table}</TableBody>

@@ -4,18 +4,25 @@ import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { TransactionsContext } from '../context/TransactionsContext';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { PortfolioTable } from './PortfolioTable';
-import { mapTransactionsToPortfolio } from '../utils/mapTransactions';
+import {
+  mapTransactionsValueOfPurchase,
+  mapTransactionsToPortfolio,
+  getPortfolioSum,
+} from '../utils/mapTransactions';
 import { usePrices } from '../hooks/usePrices';
 import { useEffect } from 'react';
 
 export const Portfolio = () => {
-  const [valueOfPortfolio, setValueOfPortfolio] = useState(0);
   const { prices, loading, fetchPrices } = usePrices();
   const context = useContext(TransactionsContext);
 
   const mapTransactions = mapTransactionsToPortfolio(
+    context.transactions,
+  );
+
+  const trasnactionsValueOfPurchase = mapTransactionsValueOfPurchase(
     context.transactions,
   );
 
@@ -25,13 +32,18 @@ export const Portfolio = () => {
     fetchPrices({ ids: idsToFetch });
   }, [idsToFetch, fetchPrices]);
 
-  console.log('transactions', prices);
+  console.log(context.transactions);
 
   if (loading) {
     return <div>Loading</div>;
   }
 
+  const valuePortfolio = getPortfolioSum(mapTransactions, prices);
   // tabela
+  const purchaseValueOfPortfolio = Object.values(
+    trasnactionsValueOfPurchase,
+  ).reduce((prev, current) => (prev += current));
+
   return (
     <Box>
       <Grid
@@ -39,7 +51,7 @@ export const Portfolio = () => {
         spacing={2}
         style={{ padding: '20px 0 40px 0' }}
       >
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -53,7 +65,7 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -69,7 +81,7 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -79,18 +91,53 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
-                Account value:
+                Actuall Account value:
               </Typography>
+              <Typography>${valuePortfolio.toFixed(2)}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={4}>
+          <Card>
+            <CardContent>
+              <Typography style={{ fontWeight: 'bold' }}>
+                Purchase value:
+              </Typography>
+              <Typography>${purchaseValueOfPortfolio}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={4}>
+          <Card>
+            <CardContent>
+              <Typography style={{ fontWeight: 'bold' }}>
+                Profit/Loss:
+              </Typography>
+              {valuePortfolio - purchaseValueOfPortfolio > 0 ? (
+                <Typography style={{ color: '#07BF29' }}>
+                  ${valuePortfolio - purchaseValueOfPortfolio}
+                </Typography>
+              ) : (
+                <Typography style={{ color: '#D71212' }}>
+                  ${valuePortfolio - purchaseValueOfPortfolio}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-      <Typography variant="h4">Portfolio</Typography>
-      <PortfolioTable mapTransactions={mapTransactions} />
+      <Typography variant="h4" style={{ padding: 20 }}>
+        Portfolio
+      </Typography>
+      <PortfolioTable
+        mapTransactions={mapTransactions}
+        prices={prices}
+        trasnactionsValueOfPurchase={trasnactionsValueOfPurchase}
+      />
     </Box>
   );
 };

@@ -1,0 +1,8 @@
+// 1
+pod lista favourites mamy zle wartosci (ilosc itemow + ilosc stron)
+
+// 2
+podczas kasowania z favourites mozemy wyrzucac item z listy zamiast tylko odznaczac
+
+// 3
+jesli nie mamy nic zaznaczone gwiazdką to widać wszystkie
