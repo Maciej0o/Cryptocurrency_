@@ -32,8 +32,6 @@ export const Portfolio = () => {
     fetchPrices({ ids: idsToFetch });
   }, [idsToFetch, fetchPrices]);
 
-  console.log(context.transactions);
-
   if (loading) {
     return <div>Loading</div>;
   }
@@ -51,7 +49,7 @@ export const Portfolio = () => {
         spacing={2}
         style={{ padding: '20px 0 40px 0' }}
       >
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -65,7 +63,7 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -81,7 +79,7 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -91,7 +89,7 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -101,7 +99,7 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
@@ -111,7 +109,7 @@ export const Portfolio = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
               <Typography style={{ fontWeight: 'bold' }}>
