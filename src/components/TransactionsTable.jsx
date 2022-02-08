@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 
 import { useContext } from 'react';
 import { TransactionsContext } from '../context/TransactionsContext';
+import { EditTransactionsForm } from './EditTransactionsForm';
 
 import { styled } from '@mui/styles';
 import { saveToLs } from '../utils/localstorage';
@@ -48,6 +49,7 @@ export const TransactionsTable = (props) => {
               <Title align="right">Amount</Title>
               <Title align="right">Value</Title>
               <Title align="right">Date</Title>
+              <Title align="right"></Title>
               <Title align="right"></Title>
             </TableRow>
           </TableHead>
@@ -104,6 +106,19 @@ export const TransactionsTable = (props) => {
                   $ {el.amount * el.price}
                 </TableCell>
                 <TableCell align="right">{el.date}</TableCell>
+
+                <TableCell align="right">
+                  <EditTransactionsForm
+                    list={props.list}
+                    id={el.id}
+                    name={el.name}
+                    amount={el.amount}
+                    price={el.price}
+                    type={el.type}
+                    date={el.date}
+                  />
+                </TableCell>
+
                 <TableCell align="right">
                   <Button
                     variant="contained"

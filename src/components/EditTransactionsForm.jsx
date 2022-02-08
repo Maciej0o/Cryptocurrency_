@@ -1,38 +1,48 @@
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import CircularProgress from '@mui/material/CircularProgress';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
-
-import { TransactionsTable } from './TransactionsTable';
-import { useEffect, useState, useContext } from 'react';
-import { useCoins } from '../hooks/useCoins';
-import { useSearchParams } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { useState, useContext } from 'react';
 import { TransactionsContext } from '../context/TransactionsContext';
-import { saveToLs } from '../utils/localstorage';
+
+import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
+import { saveToLs } from '../utils/localstorage';
 
-export const Transactions = () => {
-  const [params] = useSearchParams();
-  const searchIdParam = params.get('id');
-  const [valueAmount, setValueAmount] = useState(null);
-  const [valuePrice, setValuePrice] = useState(null);
-  const [valueName, setValueName] = useState(searchIdParam || null);
-  const [transactionType, setTransactionType] = useState('buy');
-  // const [idEditTransaction, setIdEditTransaction] = useState(null);
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 1000,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
-  const { coins, loading, fetchCoinGecko } = useCoins();
-  const crypto = coins[0];
-
+export const EditTransactionsForm = (props) => {
   const context = useContext(TransactionsContext);
+  const [valueAmount, setValueAmount] = useState(props.amount);
+  const [valuePrice, setValuePrice] = useState(props.price);
+  const [valueName, setValueName] = useState(props.name);
+  const [transactionType, setTransactionType] = useState(props.type);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleRadioChange = (event) => {
+    setTransactionType(event.target.value);
+  };
 
   const handleChangeAmount = (event) => {
     setValueAmount(event.target.value);
@@ -42,44 +52,60 @@ export const Transactions = () => {
     setValuePrice(event.target.value);
   };
 
-  useEffect(() => {
-    fetchCoinGecko({});
-  }, [fetchCoinGecko]);
-
-  if (loading) {
-    return <CircularProgress />;
-  }
-
-  if (!crypto) {
-    return <span>Error while loading crypto</span>;
-  }
-  console.log(context.transactions);
-
-  const handleChangeCoinsList = () => {
-    const newTransactions = context.transactions.concat({
-      id: uuidv4(),
+  const findEditingTransaction = () => {
+    let newTransactions = [...context.transactions];
+    let searchElement = newTransactions.find(
+      (el) => el.id === props.id,
+    );
+    newTransactions[newTransactions.indexOf(searchElement)] = {
+      id: searchElement.id,
       type: transactionType,
       name: valueName,
       amount: parseFloat(valueAmount),
       price: parseFloat(valuePrice),
-      date: format(new Date(), 'dd-MM-yyyy  HH:mm:ss '),
-    });
-    saveToLs(newTransactions);
-    context.setTransactions(newTransactions);
+      date: props.date,
+    };
+
+    // let newObject = [];
+    // for (let el of context.transactions) {
+    //   if (props.id === el.id) {
+    //     newObject.push({
+    //       id: el.id,
+    //       type: transactionType,
+    //       name: valueName,
+    //       amount: parseFloat(valueAmount),
+    //       price: parseFloat(valuePrice),
+    //       date: props.date,
+    //     });
+    //   } else {
+    //     newObject.push(el);
+    //   }
+    // }
+    return newTransactions;
+  };
+
+  const handleEditTransaction = () => {
+    let transactionList = findEditingTransaction();
+    saveToLs(transactionList);
+    context.setTransactions(transactionList);
 
     setValueAmount(0);
     setValuePrice(0);
+    handleClose();
   };
-
-  const handleRadioChange = (event) => {
-    setTransactionType(event.target.value);
-  };
-
-  const list = coins.map((coin) => coin.id);
   return (
     <Box>
-      <Grid container spacing={8}>
-        <Grid item xs={12}>
+      <Button variant="contained" onClick={handleOpen}>
+        Edit
+      </Button>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
           <Card
             variant="outlined"
             sx={{ minWidth: 275 }}
@@ -95,10 +121,7 @@ export const Transactions = () => {
               }}
             >
               <Typography variant="h4" gutterBottom>
-                Transactions
-              </Typography>
-              <Typography variant="p" gutterBottom>
-                Add your transaction
+                Edit ransaction
               </Typography>
               <Box
                 style={{
@@ -130,7 +153,7 @@ export const Transactions = () => {
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  options={list}
+                  options={props.list}
                   onInputChange={(event, newInputValue) => {
                     setValueName(newInputValue);
                   }}
@@ -160,18 +183,14 @@ export const Transactions = () => {
 
               <Button
                 variant="contained"
-                onClick={handleChangeCoinsList}
+                onClick={handleEditTransaction}
               >
-                Add transaction
+                Edit transaction
               </Button>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12}>
-          <TransactionsTable list={list} />
-        </Grid>
-        <Grid item xs={12}></Grid>
-      </Grid>
+        </Box>
+      </Modal>
     </Box>
   );
 };

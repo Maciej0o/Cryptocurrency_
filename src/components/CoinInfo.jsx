@@ -133,7 +133,7 @@ export const CoinInfo = () => {
           </Grid>
         </CardContent>
       </Card>
-      <CoinChart coin={coin} />
+      <CoinChart coin={coin} width={1050} height={300} />
     </div>
   );
 };

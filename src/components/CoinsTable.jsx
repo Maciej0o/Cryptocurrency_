@@ -16,6 +16,10 @@ import { saveToLsFav } from '../utils/localstorage';
 import { useCoins } from '../hooks/useCoins';
 import { CoinsUiTable } from './CoinsUiTable';
 
+const currencySigns = {
+  USD: '$',
+};
+
 export const CoinsTable = () => {
   const context = useContext(TransactionsContext);
   const [page, setPage] = useState(0);
