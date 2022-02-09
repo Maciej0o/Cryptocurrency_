@@ -32,7 +32,7 @@ function App() {
     setFavoritesCoins: (favoritesCoins) =>
       setContext({ ...context, favoritesCoins }),
   };
-  console.log(context.transactions);
+  console.log();
   return (
     <Box
       className="App"
