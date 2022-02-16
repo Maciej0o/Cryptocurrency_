@@ -7,14 +7,14 @@ import { useGlobalInfo } from '../hooks/useGlobalInfo';
 import { useEffect } from 'react';
 import { styled } from '@mui/styles';
 
-import { firebaseApp } from '../firebaseConf/firebaseConf';
+// import { firebaseApp } from '../firebaseConf/firebaseConf';
 
 const Title = styled(Typography)({
   fontSize: 14,
   fontWeight: 'bold',
   paddingRight: 5,
 });
-console.log(JSON.stringify(firebaseApp));
+// console.log(JSON.stringify(firebaseApp));
 const Text = styled(Typography)({
   fontSize: 14,
   paddingRight: 25,

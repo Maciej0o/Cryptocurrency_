@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { setupCache } from 'axios-cache-adapter';
+// import { setupCache } from 'axios-cache-adapter';
 
-const cache = setupCache({
-  maxAge: 30 * 1000,
-});
+// const cache = setupCache({
+//   maxAge: 30 * 1000,
+// });
 
 export const coinGeckoApi = axios.create({
   baseURL: 'https://api.coingecko.com/api/v3/',

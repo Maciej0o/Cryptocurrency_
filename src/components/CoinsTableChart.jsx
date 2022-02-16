@@ -18,7 +18,7 @@ export const CoinsTableChart = (props) => {
 
   const id = props.coin;
   useEffect(() => {
-    fetchHistoryPrices({ id });
+    //fetchHistoryPrices({ id });
   }, [fetchHistoryPrices, id]);
 
   const createDataChart = (historyPrices) => {
