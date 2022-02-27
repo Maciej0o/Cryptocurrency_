@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { CoinsTableChart } from './CoinsTableChart';
+import { CoinsTableChartModal } from './CoinsTableChartModal';
 
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -132,7 +132,7 @@ export const CoinsUiTable = ({
                 {currencySign} {el['market_cap']}
               </TableCell>
               <TableCell align="right">
-                <CoinsTableChart coin={el.id} />
+                <CoinsTableChartModal coin={el.id} />
               </TableCell>
               <TableCell align="right">
                 <Link

@@ -46,7 +46,11 @@ export const CoinChart = (props) => {
       }}
     >
       <Typography variant="h4">Price Chart</Typography>
-      <AreaChart width={1050} height={350} data={data}>
+      <AreaChart
+        width={props.width}
+        height={props.height}
+        data={data}
+      >
         {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" /> */}
         <CartesianGrid stroke="#ccc" strokeDasharray="3 3" />
         <XAxis dataKey="name" />

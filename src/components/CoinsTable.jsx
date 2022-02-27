@@ -56,12 +56,14 @@ export const CoinsTable = () => {
     setPage(0);
   };
 
+  // db
   const addToFavorite = (name) => {
     const merged = [...context.favoritesCoins, name];
     context.setFavoritesCoins(merged);
     saveToLsFav(merged);
   };
 
+  // db
   const removeFromFavorite = (name) => {
     const filteredCoins = context.favoritesCoins.filter(
       (coin) => coin !== name,
