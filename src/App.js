@@ -25,6 +25,7 @@ function App() {
     transactions: context.transactions,
     valuePortfolio: context.valuePortfolio,
     favoritesCoins: context.favoritesCoins,
+
     setTransactions: (transactions) =>
       setContext({ ...context, transactions }),
     setValuePortfolio: (valuePortfolio) =>

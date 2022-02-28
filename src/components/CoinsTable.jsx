@@ -11,10 +11,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import { TransactionsContext } from '../context/TransactionsContext';
-import { saveToLsFav } from '../utils/localstorage';
+import { saveToLsFav, loadFromLsUser } from '../utils/localstorage';
 
 import { useCoins } from '../hooks/useCoins';
 import { CoinsUiTable } from './CoinsUiTable';
+import { useFavouritesDb } from '../firebaseConf/useFavouritesDb';
+import { useAuth } from '../firebaseConf/useAuth';
 
 const currencySigns = {
   USD: '$',
@@ -31,6 +33,25 @@ export const CoinsTable = () => {
   const [favActive, setFavActive] = useState(false);
   const [countRows, setCounRows] = useState(12459);
   const [currency, setCurrency] = useState(['USD', '$']);
+
+  // tymczasowo
+  const { user, loading: userLoadin } = useAuth();
+  const [fav, setFav] = useState([]);
+
+  console.log('favs', fav);
+
+  const { setFavouriteCoin, getFavouritesByUid } = useFavouritesDb();
+
+  useEffect(() => {
+    const getFav = async () => {
+      const res = await getFavouritesByUid(user.uid);
+      setFav(Object.keys(res));
+    };
+
+    if (user?.uid) {
+      getFav();
+    }
+  }, [getFavouritesByUid, user?.uid]);
 
   useEffect(() => {
     fetchCoinGecko({
@@ -55,14 +76,17 @@ export const CoinsTable = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
   // db
   const addToFavorite = (name) => {
     const merged = [...context.favoritesCoins, name];
     context.setFavoritesCoins(merged);
     saveToLsFav(merged);
-  };
 
+    setFavouriteCoin({
+      uid: loadFromLsUser(),
+      coin: name,
+    });
+  };
   // db
   const removeFromFavorite = (name) => {
     const filteredCoins = context.favoritesCoins.filter(
@@ -76,6 +100,12 @@ export const CoinsTable = () => {
       setCounRows(filteredCoins.length);
       setFavoritesCoins(filteredCoins);
     }
+
+    setFavouriteCoin({
+      uid: loadFromLsUser(),
+      coin: name,
+      isFavourite: false,
+    });
   };
 
   const showFavoritesCoins = () => {

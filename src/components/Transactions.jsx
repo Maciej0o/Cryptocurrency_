@@ -20,6 +20,10 @@ import { saveToLs } from '../utils/localstorage';
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 
+import { loadFromLsUser } from '../utils/localstorage';
+
+import { useTransactionsDb } from '../firebaseConf/useTransactionsDb';
+
 export const Transactions = () => {
   const [params] = useSearchParams();
   const searchIdParam = params.get('id');
@@ -33,6 +37,9 @@ export const Transactions = () => {
   const crypto = coins[0];
 
   const context = useContext(TransactionsContext);
+
+  const { setTransactionsCoin, getTransactionsByUid } =
+    useTransactionsDb();
 
   const handleChangeAmount = (event) => {
     setValueAmount(event.target.value);
@@ -66,6 +73,16 @@ export const Transactions = () => {
     });
     saveToLs(newTransactions);
     context.setTransactions(newTransactions);
+
+    setTransactionsCoin({
+      uid: loadFromLsUser(),
+      id: uuidv4(),
+      type: transactionType,
+      name: valueName,
+      amount: parseFloat(valueAmount),
+      price: parseFloat(valuePrice),
+      date: format(new Date(), 'dd-MM-yyyy  HH:mm:ss '),
+    });
 
     setValueAmount(0);
     setValuePrice(0);

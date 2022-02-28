@@ -5,15 +5,11 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import { loadFromLsUser } from '../utils/localstorage';
-import { useState, useEffect } from 'react';
+import { saveToLsUser } from '../utils/localstorage';
+import { useState, useEffect, useContext } from 'react';
 
 import Grid from '@mui/material/Grid';
 
-// import {
-//   signInWithGoogle,
-//   logoutGoogle,
-// } from '../firebaseConf/firebaseConf';
 import { useAuth } from '../firebaseConf/useAuth';
 
 export const NavBar = () => {
@@ -21,14 +17,11 @@ export const NavBar = () => {
 
   const { user, loading, signInWithGoogle, logoutGoogle } = useAuth();
 
-  // useEffect(() => {
-  //   signInWithGoogle({});
-  // }, [signInWithGoogle]);
-
-  // useEffect(() => {
-  //   logoutGoogle({});
-  // }, [logoutGoogle]);
-
+  if (user) {
+    saveToLsUser(user.reloadUserInfo.localId);
+  } else {
+    saveToLsUser(null);
+  }
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -128,23 +121,26 @@ export const NavBar = () => {
               alignItems: 'center',
             }}
           >
-            <Button
-              color="secondary"
-              style={{
-                backgroundColor: 'white',
-                margin: '0 5px 0 40px',
-              }}
-              onClick={signInWithGoogle}
-            >
-              Sign in
-            </Button>
-            <Button
-              color="secondary"
-              style={{ backgroundColor: 'white' }}
-              onClick={logoutGoogle}
-            >
-              Logout
-            </Button>
+            {!user === true ? (
+              <Button
+                color="secondary"
+                style={{
+                  backgroundColor: 'white',
+                  margin: '0 5px 0 40px',
+                }}
+                onClick={signInWithGoogle}
+              >
+                Sign in
+              </Button>
+            ) : (
+              <Button
+                color="secondary"
+                style={{ backgroundColor: 'white' }}
+                onClick={logoutGoogle}
+              >
+                Logout
+              </Button>
+            )}
           </Grid>
         </Grid>
       </Container>
